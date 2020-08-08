@@ -32,14 +32,34 @@ module.exports = (config) => {
 
     app.use(bodyParser.urlencoded({ extended: true }));
     app.use(cookieParser());
-    app.use(
-        session({
-            secret: 'very secret',
-            resave: true,
-            saveUninitialized: false,
-            store: new MongoStore({ mongooseConnection: mongoose.connection })
-        })
-    );
+
+    if (app.get('env') === 'production') {
+        app.set('trust proxy', 'loopback');
+        app.use(
+            session({
+                secret: 'another very secret',
+                name: 'sessionId',
+                resave: true,
+                proxy: true,
+                cookie: { secure: true },
+                saveUninitialized: false,
+                store: new MongoStore({
+                    mongooseConnection: mongoose.connection
+                })
+            })
+        );
+    } else {
+        app.use(
+            session({
+                secret: 'very secret',
+                resave: true,
+                saveUninitialized: false,
+                store: new MongoStore({
+                    mongooseConnection: mongoose.connection
+                })
+            })
+        );
+    }
 
     app.use(auth.initialize);
     app.use(auth.session);
