@@ -1,4 +1,3 @@
 const mongoose = require('mongoose');
 
-module.exports.connect = async (dns) =>
-    mongoose.connect(dns, { useNewUrlParser: true, useUnifiedTopology: true });
+module.exports.connect = async dsn => mongoose.connect(dsn, { useNewUrlParser: true });
